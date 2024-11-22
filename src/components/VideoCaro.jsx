@@ -45,7 +45,7 @@ const VideoCaro = () => {
     useEffect(() => {
         if(loadedData.length > 3){
             if(!isPlaying) {
-                videoRef.current[videoId].pause();//doesnt render rn
+                videoRef.current[videoId].pause();
             } else {
                 startPlay && videoRef.current[videoId].play();
             }
@@ -101,8 +101,7 @@ const VideoCaro = () => {
 
             const animUpdate = () => {
                 anim.progress( 
-                    videoRef.current[videoId].currentTime /
-                    hightlightsSlides[videoId].videoDuration
+                    videoRef.current[videoId].currentTime/hightlightsSlides[videoId].videoDuration
                 );
             };
 
@@ -114,7 +113,7 @@ const VideoCaro = () => {
         
         }
 
-    },[videoId, startPlay]);
+    },[videoId, startPlay, isPlaying]);
 
     const handleProcess = (type, i) => {
         switch(type) {
