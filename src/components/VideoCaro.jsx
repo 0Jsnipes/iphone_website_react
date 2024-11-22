@@ -38,7 +38,7 @@ const VideoCaro = () => {
     }, [isEnd, videoId])
 
     useEffect(() => {
-        if(loadedData < 3){
+        if(loadedData.length > 3){
             if(!isPlaying) {
                 videoRef.current[videoId].pause();//doesnt render rn
             } else {
@@ -48,7 +48,7 @@ const VideoCaro = () => {
 
     }, [startPlay,videoId,isPlaying,loadedData]);
 
-   const handleLoadedMetaData = (i , e) => {//before i added this the video worked (keeping for now  1:54:27)
+   const handleLoadedMetaData = (i , e) => {
        setLoadedData((pre)=> [...pre, e])
     }
 
@@ -62,8 +62,8 @@ const VideoCaro = () => {
                 onUpdate: () => {
                     const progress = Math.ceil(anim.progress() * 100);
 
-                    if(currentProgress != progress){
-                        currentProgress = progress
+                    if(progress != currentProgress){
+                        currentProgress = progress;
 
                         gsap.to(videoDivRef.current[videoId], {
                             width: window.innerWidth <760
@@ -90,12 +90,12 @@ const VideoCaro = () => {
                     }
                 }
             })
-            if(videoId=== 0){
+            if(videoId === 0){
                 anim.restart();
             }
             const animUpdate = () => {
-                anim.progress( videoRef.current[videoId] /
-                     hightlightsSlides[videoId].videoDuration)
+                anim.progress( videoRef.current[videoId].currentTime /
+                    hightlightsSlides[videoId].videoDuration)
             }
             if(isPlaying){
             gsap.ticker.add(animUpdate)
