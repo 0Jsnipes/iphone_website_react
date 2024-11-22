@@ -21,6 +21,11 @@ const VideoCaro = () => {
     const { isEnd, isLast, startPlay, videoId, isPlaying} = video
 
     useGSAP(() => {
+        gsap.to('#slider', {
+            transform: `translateX(${-100 * videoId}%)`,
+            duration: 2,
+            ease: 'power2.inOut'
+        })
         gsap.to('#video', {
             scrollTrigger: {
             trigger:'#video',
@@ -31,10 +36,10 @@ const VideoCaro = () => {
                     ...pre,
                     startPlay: true,
                     isPlaying: true,
-                }))
+                }));
 
             }
-        })
+        });
     }, [isEnd, videoId])
 
     useEffect(() => {
@@ -76,7 +81,7 @@ const VideoCaro = () => {
                             width:`${currentProgress}%`,
                             backgroundColor: 'white',
 
-                        })
+                        });
                     }
                 },
                 onComplete: () => {
@@ -93,10 +98,14 @@ const VideoCaro = () => {
             if(videoId === 0){
                 anim.restart();
             }
+
             const animUpdate = () => {
-                anim.progress( videoRef.current[videoId].currentTime /
-                    hightlightsSlides[videoId].videoDuration)
-            }
+                anim.progress( 
+                    videoRef.current[videoId].currentTime /
+                    hightlightsSlides[videoId].videoDuration
+                );
+            };
+
             if(isPlaying){
             gsap.ticker.add(animUpdate)
             } else {
@@ -121,79 +130,87 @@ const VideoCaro = () => {
             case 'play':
                 setVideo((pre) => ({...pre, isPlaying: !pre.isPlaying }))
                     break;
+            case 'pause':
+                setVideo((pre) => ({...pre, isPlaying: !pre.isPlaying }))
+                    break;
             default:
                 return video
         }
     } 
     return (
-        <div className='flex items-center'>
-          {hightlightsSlides.map((list, i) => (
-            <div key={list.id} id='slider' className='sm:pr-20 pr-10'>
-              <div className='video-carousel_container'>
-                <div className='w-full h-full flex-center rounded-3xl overflow-hidden bg-black'>
-                  <video
-                    id='video'
-                    playsInline={true}
-                    preload='auto'
-                    muted
-                    ref={(el) => (videoRef.current[i] = el)}
-                    onPlay={() => {
-                      setVideo((pre) => ({
-                        ...pre,
-                        isPlaying: true,
-                      }))
-                    }}
-                    onLoadedMetadata={(e)=>  //before i added this the video worked (keeping for now  1:54:27)
-                    handleLoadedMetaData(i, e)}
-                  >
-                    <source src={list.video} type='video/mp4' />
-                  </video>
-                </div>
-                <div className='absolute top-12 left-[5%] z-10'>
-                  {list.textLists.map((text) => (
-                    <p key={text} className='md:text-2xl text-xl font-medium'>
-                      {text}
-                    </p>
-                  ))}
+        <>
+          <div className="flex items-center">
+            {hightlightsSlides.map((list, i) => (
+              <div key={list.id} id="slider" className="sm:pr-20 pr-10">
+                <div className="video-carousel_container">
+                  <div className="w-full h-full flex-center rounded-3xl overflow-hidden bg-black">
+                    <video
+                      id="video"
+                      playsInline={true}
+                      className={`${
+                        list.id === 2 && "translate-x-44"
+                      } pointer-events-none`}
+                      preload="auto"
+                      muted
+                      ref={(el) => (videoRef.current[i] = el)}
+                      onEnded={() =>
+                        i !== 3
+                          ? handleProcess("video-end", i)
+                          : handleProcess("video-last")
+                      }
+                      onPlay={() =>
+                        setVideo((pre) => ({ ...pre, isPlaying: true }))
+                      }
+                      onLoadedMetadata={(e) => handleLoadedMetaData(i, e)}
+                    >
+                      <source src={list.video} type="video/mp4" />
+                    </video>
+                  </div>
+    
+                  <div className="absolute top-12 left-[5%] z-10">
+                    {list.textLists.map((text, i) => (
+                      <p key={i} className="md:text-2xl text-xl font-medium">
+                        {text}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
-                
-                <div className='relative flex-center mt-10'>
-                  <div className='flex-center py-5 px-10 bg-gray-300 backdrop-blur rounded-full'>
-                      {videoRef.current.map((_,i)=> (
-                          <span
-                          key={i}
-                          ref={(el) => (videoDivRef.current[i]= el)}
-                          className='mx-2 w-3 h-3 bg-gray-200 rounded-full relative cursor-pointer '
-                          >
-                              <span className='absolute h-full w-full rounded-full' 
-                              ref={(el)=> (videoSpanRef
-                                .current[i]= el)}>
-                                  </span>
-      
-                          </span>
-                      ))}
-                      </div>
-                      <div>
-            <button className='control-btn'>
-                <img src={isLast? replayImg :
-                    !isPlaying ? playImg :pauseImg}
-                    alt={isLast?'replay':
-                        !isPlaying ? 'play' : 'pause'
-                    }
-                    onClick={isLast 
-                        ? ()=> handleProcess('videoReset')
-                        : !isPlaying
-                        ? () => handleProcess('play')
-                        : () => handleProcess('pause')
-                    }
-                    />
-                </button> 
-                </div>
+            ))}
           </div>
-         </div>
-          ))}
-        </div>
+    
+          <div className="relative flex-center mt-10">
+            <div className="flex-center py-5 px-7 bg-gray-300 backdrop-blur rounded-full">
+              {videoRef.current.map((_, i) => (
+                <span
+                  key={i}
+                  className="mx-2 w-3 h-3 bg-gray-200 rounded-full relative cursor-pointer"
+                  ref={(el) => (videoDivRef.current[i] = el)}
+                >
+                  <span
+                    className="absolute h-full w-full rounded-full"
+                    ref={(el) => (videoSpanRef.current[i] = el)}
+                  />
+                </span>
+              ))}
+            </div>
+    
+            <button className="control-btn">
+              <img
+                src={isLast ? replayImg : !isPlaying ? playImg : pauseImg}
+                alt={isLast ? "replay" : !isPlaying ? "play" : "pause"}
+                onClick={
+                  isLast
+                    ? () => handleProcess("video-reset")
+                    : !isPlaying
+                    ? () => handleProcess("play")
+                    : () => handleProcess("pause")
+                }
+              />
+            </button>
+          </div>
+        </>
       );
-    }      
+    };
+    
 export default VideoCaro
