@@ -4,7 +4,10 @@ import ModelView from "./ModelView"
 import { useRef, useState } from "react"
 import { yellowImg } from "../utils"
 import * as THREE from "three"
-import { Canvas, View } from "@react-three/fiber"
+import { Canvas } from "@react-three/fiber"
+import { View } from "@react-three/drei"
+import { models, sizes } from "../constants"
+import animateWithGsapTimeline from "../utils/animations"
 
 const Model = () => {
     const [size, setSize] = useState('small')
@@ -23,6 +26,10 @@ const Model = () => {
     //rotation
     const [smallRotaion, setSmallRotation] = useState(0);
     const [LargeRotation, setLargeRotation] = useState(0);
+
+    const tl =gsap.timeline();
+
+
 
     useGSAP(()=> {
         gsap.to('#heading', {
@@ -57,7 +64,17 @@ const Model = () => {
                     item={model}
                     size={size}
                     />
-                    <Canvas>
+                    <Canvas
+                    className="w-full h-full"
+                    style={{
+                        position:'fixed',
+                        top: 0,
+                        bottom:0,
+                        left:0,
+                        right:0,
+                        overflow: 'hidden',
+                    }}
+                    >
                         <View.Port />
                     </Canvas>
                 </div>
@@ -66,6 +83,7 @@ const Model = () => {
    </section>
    </>
   )
+  // @react-three/drei @react-three/fiber npm install these 
 }
 
 export default Model
